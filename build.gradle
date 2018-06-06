@@ -1,0 +1,111 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id "com.bmuschko.nexus" version "2.3.1"
+    id 'maven-publish'
+    id 'io.codearte.nexus-staging' version '0.11.0'
+}
+
+group 'al.aldi.qa'
+version '0.1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'junit', name: 'junit', version: '4.12'
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    implementation group: 'org.seleniumhq.selenium', name: 'selenium-java', version: '3.12.0'
+    implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
+    implementation group: 'org.reflections', name: 'reflections', version: '0.9.10'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.6'
+
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Main-Class': 'al.aldi.qa.selenium_tests.Main'
+        )
+    }
+}
+
+shadowJar {
+    baseName = project.name + '-all'
+    classifier = null
+    version = null
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) { publication ->
+            project.shadow.component(publication)
+        }
+    }
+
+    publications {
+        mavenJava(MavenPublication) {
+            groupId project.group
+            artifactId 'selenium-boilerplate'
+            version project.version
+
+
+            from components.java
+        }
+    }
+}
+
+publishing {
+    repositories {
+        jcenter()
+    }
+}
+
+nexusStaging {
+    stagingProfileId = "selenium-boilerplate" //when not defined will be got from server using "packageGroup"
+}
+
+modifyPom {
+    project {
+        name 'selenium-boilerplate'
+        description 'Java client for Sprova Test Management'
+        url 'https://github.com/aldialimucaj/selenium-boilerplate'
+        inceptionYear '2018'
+        scm {
+            url 'https://github.com/aldialimucaj/selenium-boilerplate'
+            connection 'scm:https://github.com/aldialimucaj/selenium-boilerplate.git'
+            developerConnection 'scm:ghttps://github.com/aldialimucaj/selenium-boilerplate.git'
+        }
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+        developers {
+            developer {
+                id 'aldi'
+                name 'Aldi Alimucaj'
+                email 'aldi.alimucaj@gmail.com'
+            }
+        }
+    }
+}
+
+extraArchive {
+    sources = true
+    tests = true
+    javadoc = true
+}
+
+nexus {
+    sign = true
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
+}
