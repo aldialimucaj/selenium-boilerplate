@@ -2,7 +2,7 @@
 Boilerplate aimed to help get started as fast as possible with your selenium test project.
 
 While developing every test case can be executed separately from the bundle.
-Once you want to execute the test form a CI you have to build a bundled jar file.
+Once you want to execute the test from a CI you have to build a bundled jar file.
 
 Note: the filename of your jar file is dependent on you project name
 
